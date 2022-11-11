@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 function App() {
@@ -16,14 +16,16 @@ function App() {
     setList((prev) => [...prev, todo])
   }
 
-  const deleteFunction = (arrIndex) => {  
-    setList((prev)=>prev.filter((val,index)=>{
-      return arrIndex!==index
+  const deleteFunction = (arrIndex) => {
+    setList((prev) => prev.filter((val, index) => {
+      return arrIndex !== index
     }))
   }
 
-  const complete = (e) => {
-    e.target.style.textDecoration = "line-through"
+  const todoRef = useRef({})
+
+  const complete = (index) => {
+    todoRef.current[index].style.textDecoration = "line-through"
   }
 
 
@@ -38,25 +40,29 @@ function App() {
       </main>
       <section>
         {
-          (list.length!==0)?<table>
-          <tr>
-            <th>Todo</th>
-            <th>Options</th>
-          </tr>
-          {
-            list.map((val,index)=>{
-              return(
-                <tr key={index}>
-                  <td className='todo'>{val}</td>
-                  <td className='option'>
-                    <button className='completed' onClick={complete}>Completed</button>
-                    <button onClick={()=>deleteFunction(index)} className="delete">Delete</button>
-                  </td>
-                </tr>
-              )
-            })
-          }
-        </table>:<h1>You Have No Data!</h1>
+          (list.length !== 0) ? <table>
+            <thead>
+              <tr>
+                <th>Todo</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                list.map((val, index) => {
+                  return (
+                    <tr key={index}>
+                      <td className='todo' ref={(element) => todoRef.current[index]=(element)} key={index}>{val}</td>
+                      <td className='option'>
+                        <button className='completed' onClick={()=>complete(index)}>Completed</button>
+                        <button onClick={() => deleteFunction(index)} className="delete">Delete</button>
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table> : <h1>You Have No Data!</h1>
         }
       </section>
     </>
